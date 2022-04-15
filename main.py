@@ -1,23 +1,31 @@
+import random
 import tkinter
+from time import time, sleep
 from tkinter import Label, Button, ttk, Tk
 from PIL import Image, ImageTk
-from stegano import lsb
 from functools import partial
-import os
+from os import walk
+from os.path import exists
 
 MAIN_PATH_CATS = "Dataset/cats"
 MAIN_PATH_DOGS = "Dataset/dogs"
 MAIN_PATH_FLOWERS = "Dataset/flowers"
 MAIN_PATH_SHIPS = "Dataset/ships"
 
-def getNameFilesFromDir(path: str):
-    path, dirs, files = next(os.walk(path))
-    return files
-
+keyToFolder = {0: MAIN_PATH_CATS, 1: MAIN_PATH_DOGS,
+               2: MAIN_PATH_FLOWERS, 3: MAIN_PATH_SHIPS}
 class myBtn(Button):
-    def __init__(self, switcher: bool):
+    def __init__(self, switcher: bool, index: str):
         Button.__init__(self)
         self.switcher = True
+        self.index = ""
+
+    def getIndex(self):
+        return self.index
+
+def getNameFilesFromDir(path: str):
+    path, dirs, files = next(walk(path))
+    return files
 
 def changeBtnState(path: str, btn: myBtn, func, *args):
     placeBtn = btn.place_info()
@@ -45,35 +53,98 @@ def changeBtnState(path: str, btn: myBtn, func, *args):
         btn.image = imageRender
         btn.place(x=int(placeBtn['x']) - 5, y=int(placeBtn['y']) - 5)
 
+def checkValueInMatrix(temp: str, arrayForCheck: list):
+    for i in range(0, len(arrayForCheck)):
+        if arrayForCheck[i] == temp:
+            return i
+    return -1
 
-mainApp = Tk()
-mainApp.geometry("460x460")
-mainApp.resizable(False, False)
+def myCaptcaha():
+    mainApp = Tk(className="myCAPTCHA")
+    mainApp.geometry("460x460")
+    mainApp.resizable(False, False)
 
-arrayOfButtons = []
+    xCoord = 10
+    yCoord = 10
+    arrayOfListButtons = []
+    useImages = []
+    for i in range(0, 16):
+        tempStr = ""
+        randomFolder = 0
+        while (True):
+            randomFolder = int(random.random() * 10 % 4)
 
-xCoord = 10
-yCoord = 10
-for i in range(0, 16):
-    tempStr = MAIN_PATH_CATS + "/" + getNameFilesFromDir(MAIN_PATH_CATS)[0]
-    imageLoader = Image.open(tempStr) \
-        .resize((100, 100), Image.ANTIALIAS)
+            tempStr = keyToFolder[randomFolder] + \
+                      "/" + \
+                      getNameFilesFromDir(keyToFolder[randomFolder])[int(random.random() * 10 % 10)]
+            if tempStr not in useImages:
+                useImages.append(tempStr)
+                break
+            else:
+                tempStr = ""
+                randomFolder = 0
 
-    imageRender = ImageTk.PhotoImage(imageLoader)
-    temp = myBtn(mainApp)
-    temp["image"] = imageRender
-    temp["width"] = 100
-    temp["height"] = 100
-    temp["command"] = partial(changeBtnState, tempStr,
-                              temp, ())
-    temp.image = imageRender
-    arrayOfButtons.append(temp)
-    arrayOfButtons[len(arrayOfButtons) - 1].place(x=xCoord, y=yCoord)
 
-    if xCoord <= 330:
+        imageLoader = Image.open(tempStr) \
+            .resize((100, 100), Image.ANTIALIAS)
+
+        imageRender = ImageTk.PhotoImage(imageLoader)
+        tempBtn = myBtn(mainApp, tempStr)
+        tempBtn["image"] = imageRender
+        tempBtn["width"] = 100
+        tempBtn["height"] = 100
+        tempBtn["command"] = partial(changeBtnState, tempStr,
+                                     tempBtn, ())
+        tempBtn.image = imageRender
+        arrayOfListButtons.append(tempBtn)
+        arrayOfListButtons[len(arrayOfListButtons) - 1].place(x=xCoord, y=yCoord)
         xCoord += 110
-    else:
-        xCoord = 10
-        yCoord += 110
 
-mainApp.mainloop()
+        if xCoord >= 440:
+            yCoord += 110
+            xCoord = 10
+
+    mainApp.mainloop()
+
+def generateKeySetImages():
+    keyApp = Tk(className="generateKey")
+    keyApp.geometry("460x120")
+    keyApp.resizable(False, False)
+
+    xCoord = 10
+    yCoord = 10
+    fileImages = []
+    for i in range(0, 4):
+        tempStr = ""
+        randomFolder = 0
+        while (True):
+            randomFolder = int(random.random() * 10 % 4)
+
+            tempStr = keyToFolder[randomFolder] + \
+                      "/" + \
+                      getNameFilesFromDir(keyToFolder[randomFolder])[int(random.random() * 10 % 10)]
+            if tempStr not in fileImages:
+                imageLoader = Image.open(tempStr) \
+                    .resize((100, 100), Image.ANTIALIAS)
+                imageRender = ImageTk.PhotoImage(imageLoader)
+                tempBtn = myBtn(keyApp, tempStr)
+                tempBtn["image"] = imageRender
+                tempBtn["width"] = 100
+                tempBtn["height"] = 100
+                tempBtn["state"] = tkinter.DISABLED
+                tempBtn.image = imageRender
+                tempBtn.place(x=xCoord, y=yCoord)
+                xCoord += 110
+                fileImages.append(tempStr)
+                print(tempBtn.getIndex())
+                break
+            else:
+                tempStr = ""
+                randomFolder = 0
+
+    keyApp.after(3000, lambda: keyApp.destroy())
+    keyApp.mainloop()
+
+generateKeySetImages()
+sleep(3)
+myCaptcaha()
