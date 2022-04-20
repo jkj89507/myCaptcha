@@ -29,8 +29,8 @@ def myCaptcaha():
         imagesTouchedPath = []
         for i in arrayOfListButtons:
             nameForChoose.append(i.getIndex())
-            print(nameForChoose[len(nameForChoose) - 1])
-            if i. == True:
+            print(nameForChoose[len(nameForChoose) - 1],  i.switcher)
+            if i.switcher == True:
                 imagesTouchedPath.append(i.getIndex())
 
         for i in range(0, len(getKey)):
@@ -48,9 +48,8 @@ def myCaptcaha():
                 if i not in getKey:
                     messagebox.showwarning("Access abort", "Auth is not success!")
                     exit(0)
-        else:
-            messagebox.showinfo("Access denied", "Auth is success! Welcome!")
-            mainApp.destroy()
+        messagebox.showinfo("Access denied", "Auth is success! Welcome!")
+        mainApp.destroy()
 
 
     xCoord = 10
@@ -82,12 +81,12 @@ def myCaptcaha():
             .resize((100, 100), Image.ANTIALIAS)
 
         imageRender = ImageTk.PhotoImage(imageLoader)
-        tempBtn = myBtn(mainApp)
+        tempBtn = myBtn()
+        tempBtn.index = tempStr
         tempBtn["image"] = imageRender
         tempBtn["width"] = 100
         tempBtn["height"] = 100
-        tempBtn["command"] = partial(changeBtnState, tempStr,
-                                     tempBtn, ())
+        tempBtn["command"] = partial(changeBtnState, tempStr, tempBtn)
         tempBtn.image = imageRender
         arrayOfListButtons.append(tempBtn)
         arrayOfListButtons[len(arrayOfListButtons) - 1].place(x=xCoord, y=yCoord)
@@ -97,7 +96,7 @@ def myCaptcaha():
             yCoord += 110
             xCoord = 10
 
-    checkLoginBtn = myBtn(mainApp)
+    checkLoginBtn = myBtn()
     checkLoginBtn["font"] = "Batang 14 bold"
     checkLoginBtn["text"] = "Войти"
     checkLoginBtn["bg"] = "#1992fc"

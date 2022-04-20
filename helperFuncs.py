@@ -28,9 +28,9 @@ def windowPositionCenter(helper: Tk):
                        )
     return 0
 
-def changeBtnState(path: str, btn: myBtn, func, *args):
+def changeBtnState(path: str, btn: myBtn):
     placeBtn = btn.place_info()
-    if btn.switcher:
+    if not btn.switcher:
         imageLoader = Image.open(path)\
             .resize((90, 90))\
             .convert('L')
@@ -39,7 +39,7 @@ def changeBtnState(path: str, btn: myBtn, func, *args):
         btn["image"] = imageRender
         btn["width"] = 90
         btn["height"] = 90
-        btn.switcher = False
+        btn.switcher = True
         btn.image = imageRender
         btn.place(x=int(placeBtn['x']) + 5, y=int(placeBtn['y']) + 5)
     else:
@@ -50,6 +50,6 @@ def changeBtnState(path: str, btn: myBtn, func, *args):
         btn["image"] = imageRender
         btn["width"] = 100
         btn["height"] = 100
-        btn.switcher = True
+        btn.switcher = False
         btn.image = imageRender
         btn.place(x=int(placeBtn['x']) - 5, y=int(placeBtn['y']) - 5)

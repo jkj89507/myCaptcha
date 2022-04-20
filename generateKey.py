@@ -37,7 +37,7 @@ def generateKeySetImages():
                 imageLoader = Image.open(tempStr) \
                     .resize((100, 100), Image.ANTIALIAS)
                 imageRender = ImageTk.PhotoImage(imageLoader)
-                tempBtn = myBtn(keyApp)
+                tempBtn = myBtn()
                 tempBtn["image"] = imageRender
                 tempBtn["width"] = 100
                 tempBtn["height"] = 100
